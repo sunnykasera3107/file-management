@@ -1,0 +1,7 @@
+# VSCODE
+/.vscode*
+/.vscode/*
+
+#Environment files
+.env
+
