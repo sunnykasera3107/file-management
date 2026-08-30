@@ -8,8 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.manager.users.model.LoginRequest;
-import com.manager.users.model.LoginResponse;
+import com.manager.users.dto.LoginRequest;
+import com.manager.users.dto.LoginResponse;
 import com.manager.users.model.UserJwt;
 import com.manager.users.service.JwtService;
 

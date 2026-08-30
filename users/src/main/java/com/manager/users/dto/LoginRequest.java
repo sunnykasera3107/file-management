@@ -1,4 +1,4 @@
-package com.manager.users.model;
+package com.manager.users.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
