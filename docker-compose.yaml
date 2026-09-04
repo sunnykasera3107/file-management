@@ -9,8 +9,10 @@ services:
       MYSQL_PASSWORD: ${MySQL_PASSWORD}
     ports:
       - 3306:3306
+    command: --init-file=/tmp/.init.sql
     volumes:
-      - mysql-data:/var/lib/mysql
+      - ./.init.sql:/tmp/.init.sql:ro
+      - mysql_data:/var/lib/mysql
     restart: always
 
     healthcheck:
@@ -38,7 +40,52 @@ services:
     
     volumes:
       - users:/home/app
-  
+
+  mongo:
+    image: mongo
+    container_name: mongodb_container
+    restart: always
+    command: ["mongod", "--quiet"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    ports:
+      - "27027:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
+
+  files:
+    build: ./files
+    container_name: filemanagement
+    depends_on:
+      mongo:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    ports:
+      - 8082:8080
+    environment:
+      MONGO_HOST: mongo
+      MONGO_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MYSQL_HOST: mysql
+      MYSQL_ROOT_PASS: ${MYSQL_ROOT_PASS}
+      MySQL_DATABASE: ${MySQL_DATABASE}
+      MySQL_USERNAME: ${MySQL_USERNAME}
+      MySQL_PASSWORD: ${MySQL_PASSWORD}
+    volumes:
+      - files:/home/app
+      - storage:/home/app/storage
+
 volumes:
-  mysql-data:
+  mysql_data:
   users:
+  mongo_data:
+  files:
+  storage:
