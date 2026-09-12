@@ -37,6 +37,7 @@ services:
       MySQL_DATABASE: ${MySQL_DATABASE}
       MySQL_USERNAME: ${MySQL_USERNAME}
       MySQL_PASSWORD: ${MySQL_PASSWORD}
+      APIGATEWAY: 'api'
     
     volumes:
       - users:/home/app
@@ -53,6 +54,7 @@ services:
       - "27027:27017"
     volumes:
       - mongo_data:/data/db
+      - ./mongod.conf:/etc/mongo/mongod.conf
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
       interval: 10s
@@ -79,9 +81,21 @@ services:
       MySQL_DATABASE: ${MySQL_DATABASE}
       MySQL_USERNAME: ${MySQL_USERNAME}
       MySQL_PASSWORD: ${MySQL_PASSWORD}
+      APIGATEWAY: 'api'
     volumes:
       - files:/home/app
       - storage:/home/app/storage
+
+  api:
+    build: ./api
+    container_name: apigateway
+    ports:
+      - 8083:8080
+    environment:
+      USERSERVICE: usermanagement
+      FILESERVICE: files
+    volumes:
+      - api:/home/app
 
 volumes:
   mysql_data:
@@ -89,3 +103,4 @@ volumes:
   mongo_data:
   files:
   storage:
+  api:

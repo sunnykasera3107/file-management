@@ -1,11 +1,15 @@
 package com.manager.users.controller;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.manager.users.dto.LoginRequest;
@@ -13,13 +17,8 @@ import com.manager.users.dto.LoginResponse;
 import com.manager.users.model.UserJwt;
 import com.manager.users.service.JwtService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-
 @RestController
 public class AuthController {
-
-    @Value("${jwt.expiration}")
-    private long expireAt;
 
     @Autowired
     private JwtService jwtService;
@@ -31,7 +30,6 @@ public class AuthController {
     public LoginResponse login(
         @RequestBody LoginRequest request
     ) {
-
         Authentication authentication =
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -45,10 +43,7 @@ public class AuthController {
         String token = jwtService.generateToken(userJwt);
         
         return new LoginResponse(
-            token,
-            request.getUsername(),
-            expireAt
+            token
         );
-        
     }
 }

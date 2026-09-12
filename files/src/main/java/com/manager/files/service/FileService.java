@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.manager.files.dto.ListFilesResponse;
 import com.manager.files.model.FileDocument;
 import com.manager.files.repository.FileRepository;
 
@@ -40,7 +41,6 @@ public class FileService {
     ) throws IOException {
 
         Path directory = Path.of(targetPath, userId);
-        System.out.println(directory);
 
         if(!Files.isDirectory(directory)){
             Files.createDirectories(directory);
@@ -87,7 +87,7 @@ public class FileService {
         String userId,
         int fileHash
     ) {
-        FileDocument existingFile = fileRepository
+        ListFilesResponse existingFile = fileRepository
                 .findByFilename(filename);
 
         if (existingFile != null) {
@@ -117,7 +117,7 @@ public class FileService {
         return false;
     }
 
-    public List<FileDocument> getFiles(String userId) {
+    public List<ListFilesResponse> getFiles(String userId) {
         return fileRepository.findByUserId(userId);
     }
 }

@@ -6,16 +6,10 @@ import lombok.Data;
 public class LoginResponse {
 
     private String token;
-    private String username;
-    private long expiredIn;
 
     public LoginResponse(
-        String token,
-        String username,
-        long expiredIn
+        String token
     ) {
         this.token = token;
-        this.username = username;
-        this.expiredIn = expiredIn;
     }
 }

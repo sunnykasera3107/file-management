@@ -20,7 +20,7 @@ public class JwtService {
     private String issuer;
 
     @Value("${jwt.expiration}")
-    private long expireAt;
+    private long exp;
     
     @Autowired
     private JwtEncoder jwtEncoder;
@@ -31,7 +31,7 @@ public class JwtService {
         JwtClaimsSet claims = JwtClaimsSet.builder()
             .issuer(issuer)
             .issuedAt(time)
-            .expiresAt(time.plusSeconds(expireAt))
+            .expiresAt(time.plusSeconds(exp))
             .subject(user.getId().toString())
             .claim("username", user.getUsername())
             .claim("email", user.getEmail())

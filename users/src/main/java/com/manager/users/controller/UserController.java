@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.manager.users.dto.RegisterRequest;
 import com.manager.users.model.User;
 import com.manager.users.service.UserService;
-
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 @RequestMapping("/user")
@@ -24,7 +24,9 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public Map<String, String> registerUser(@RequestBody User user) {
+    public Map<String, String> registerUser(@RequestBody RegisterRequest user) 
+        throws Exception
+    {
         return userService.createUser(user);
     }
 

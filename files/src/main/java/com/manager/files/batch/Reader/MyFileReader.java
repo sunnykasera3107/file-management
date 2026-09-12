@@ -27,13 +27,15 @@ public class MyFileReader implements ItemReader<Row>{
     ) throws IOException {
         this.readerService = readerService;
         this.filePath = filePath;
-        rows = this.readerService.readFileStream(this.filePath);
+        if (filePath != null) {
+            rows = this.readerService.readFileStream(this.filePath);
+        }
     }
     
     @Override
     public Row read() {
 
-        if (rows.hasNext()) {
+        if (rows != null && rows.hasNext()) {
             return rows.next();
         }
         return null;

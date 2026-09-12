@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.manager.users.model.UserJwt;
+import com.manager.users.dto.RegisterRequest;
 import com.manager.users.model.User;
 import com.manager.users.repository.UserRepository;
 
@@ -26,23 +27,30 @@ public class UserService implements UserDetailsService{
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Map<String, String> createUser(User user) {
+    public Map<String, String> createUser(RegisterRequest user) 
+        throws Exception
+    {
         boolean isValid = validateUserByUsernameAndEmail(user.getUsername(), user.getEmail());
         
         if (isValid) {
             return Map.of("message", "User account already exist");
         }
         
-        try {
-            user.setPassword(
-                passwordEncoder.encode(user.getPassword())
-            );
-            userRepository.save(user);
-            return Map.of("message", "Account created successfully");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return Map.of("message", e.getMessage());
-        }
+        User newUser = new User(
+            user.getUsername(),
+            user.getEmail(),
+            user.getPassword(),
+            user.getFullname()
+        );
+
+        newUser.setPassword(
+            passwordEncoder.encode(user.getPassword())
+        );
+
+        newUser.setPhone(user.getPhone());
+        userRepository.save(newUser);
+        
+        return Map.of("message", "Account created successfully");
     }
 
     public Map<String, String> updateUser(User user) {
@@ -114,7 +122,11 @@ public class UserService implements UserDetailsService{
             .findByUsername(username);
         
         if (user == null) {
-            throw new UsernameNotFoundException("User not found");
+            user = userRepository
+                .findByEmail(username);
+            if (user == null) {
+                throw new UsernameNotFoundException("User not found");
+            }
         }
 
         return new UserJwt(
