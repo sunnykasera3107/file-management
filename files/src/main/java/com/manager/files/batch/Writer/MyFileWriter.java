@@ -33,9 +33,8 @@ public class MyFileWriter implements ItemWriter<Map<String, FileMetaData>>{
     public void write(Chunk<? extends Map<String, FileMetaData>> items) 
         throws Exception
     {
-        ObjectId fileId = new ObjectId(id);
         FileDocument file = fileRepository
-                    .findById(fileId)
+                    .findById(id)
                     .orElseThrow(() -> new RuntimeException("File not found with id: " + id));
                             
         items.forEach((item) -> {

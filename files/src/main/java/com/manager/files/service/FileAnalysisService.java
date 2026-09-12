@@ -38,14 +38,13 @@ public class FileAnalysisService {
         this.jobRepository = jobRepository;
     }
 
-    public void processFile(String fileId) 
+    public Map<String, Long> processFile(String fileId) 
         throws Exception
     {
         System.out.println("File analysis start");
-        ObjectId id = new ObjectId(fileId);
 
         FileDocument file = fileRepository
-            .findById(id)
+            .findById(fileId)
             .orElseThrow(() -> new RuntimeException("File not found"));
 
         if (file != null) {
@@ -71,26 +70,34 @@ public class FileAnalysisService {
             Map<String, Object> metaData = file.getMetadata();
 
             metaData.put("jobId", newJob.getId());
-
+            
             file.setMetadata(metaData);
-
-            FileDocument savedFile = fileRepository.save(file);
-            System.out.println(savedFile);
+            
+            fileRepository.save(file);
+            
+            return Map.of("jobId", newJob.getId());
                         
         }
         
         System.out.println("File analysis end");
+        return null;
     }
 
-    public String getJobStatus(long id) {
+    public Map<String, String> getJobStatus(long id) {
         JobExecution jobExecution = jobRepository.getJobExecution(id);
-        return jobExecution.getStatus().toString();
+        String status = jobExecution.getStatus().toString();
+        return Map.of("status", status);
     }
 
-    public void restartJob(long id) 
+    public Map<String, String> restartJob(long id) 
         throws JobRestartException
     {
+        System.out.println("Job Id");
+        System.out.println(id);
         JobExecution jobExecution = jobRepository.getJobExecution(id);
+        System.out.println(jobExecution);
         asyncJobOperator.restart(jobExecution);
-    }
+        System.out.println("test");
+        return Map.of("message", "Job restarted");
+    } 
 }
