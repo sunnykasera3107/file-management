@@ -1,6 +1,6 @@
 package com.gateway.api.controller;
 
-import java.util.Map;
+import javax.management.RuntimeErrorException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -118,8 +118,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<UserResponse> loginUser(
         @Valid @RequestBody LoginRequest request
-    ) throws Exception {
+    ) {
         GeneralResponse response = authService.loginUser(request);
+        System.out.println(response.getResponse());
+        if (response.getResponse() == null) {
+            throw new RuntimeException("No token generated: " + response.getResponse());
+        }
         Claims claims = jwtService.extractToken(response.getResponse());
         
         UserResponse user = authService.getUser(response.getResponse());

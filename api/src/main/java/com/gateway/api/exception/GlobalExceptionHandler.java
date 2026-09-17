@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
             .body(
                 new GeneralExceptionResponse(
                     500,
-                    "Internal Server Error asdf",
+                    "Internal Server Error",
                     ex.getMessage()
                 )
             );
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
             .body(
                 new GeneralExceptionResponse(
                     404,
-                    "User not found asdf",
+                    "User not found",
                     ex.getMessage()
                 )
             );

@@ -36,9 +36,7 @@ public class AuthController {
         UserJwt userJwt = (UserJwt) authentication.getPrincipal();
 
         String token = jwtService.generateToken(userJwt);
-
-        System.out.println(token);
-        
+       
         return new LoginResponse(
             token
         );

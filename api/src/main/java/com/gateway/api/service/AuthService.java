@@ -1,5 +1,7 @@
 package com.gateway.api.service;
 
+import java.util.Map;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -48,12 +50,14 @@ public class AuthService {
     public GeneralResponse loginUser(
         LoginRequest request
     ) {
-        return webClient.post()
+        Map<String, String> token = webClient.post()
             .uri(userServiceURL.concat("/login"))
             .bodyValue(request)
             .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<GeneralResponse>(){})
+            .bodyToMono(new ParameterizedTypeReference<Map<String, String>>(){})
             .block();
+        
+        return new GeneralResponse(token.get("token"));
     }
 
     public UserResponse getUser(

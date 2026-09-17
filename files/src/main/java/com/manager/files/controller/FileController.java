@@ -3,9 +3,6 @@ package com.manager.files.controller;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-
-import javax.management.RuntimeErrorException;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -21,7 +18,6 @@ import com.manager.files.dto.FilesResponse;
 import com.manager.files.dto.GeneralResponse;
 import com.manager.files.dto.ProcessFileRequest;
 import com.manager.files.dto.ProcessRestartRequest;
-import com.manager.files.model.FileDocument;
 import com.manager.files.service.FileAnalysisService;
 import com.manager.files.service.FileService;
 

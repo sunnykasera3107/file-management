@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.session.DisableEncodeUrlFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -18,13 +17,7 @@ import org.springframework.security.config.Customizer;
 
 @Configuration
 public class SecurityConfig {
-
-    private final LogChainLink logChainLink;
-
-    public SecurityConfig(LogChainLink logChainLink) {
-        this.logChainLink = logChainLink;
-    }
-    
+   
     @Bean
     public SecurityFilterChain customFilterChain(
         HttpSecurity http
@@ -32,10 +25,6 @@ public class SecurityConfig {
         http
             .csrf(
                 (csrf) -> csrf.disable()
-            )
-            .addFilterBefore(
-                logChainLink,
-                DisableEncodeUrlFilter.class
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login").permitAll()
