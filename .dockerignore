@@ -5,3 +5,17 @@
 #Environment files
 .env
 
+#Libraries
+node_modules
+**/node_modules
+.next
+**/.next
+npm-debug.log
+.git
+.gitignore
+.env.local
+.env*.local
+.vscode
+.idea
+Dockerfile
+.dockerignore

@@ -1,4 +1,4 @@
-package com.gateway.api.dto.register;
+package com.gateway.api.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

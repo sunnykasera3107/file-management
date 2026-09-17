@@ -1,4 +1,4 @@
-package com.manager.users.model;
+package com.manager.users.dto;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -7,9 +7,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class UserJwt implements UserDetails{
 
     @NotBlank(message = "Id cannot be blank")
@@ -26,10 +28,10 @@ public class UserJwt implements UserDetails{
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserJwt(@NotBlank(message = "Id cannot be blank") UUID id,
-            @NotBlank(message = "Username cannot be blank") String username,
-            @NotBlank(message = "Email cannot be blank") String email,
-            @NotBlank(message = "Password cannot be blank") String password,
+    public UserJwt(UUID id,
+            String username,
+            String email,
+            String password,
             Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;

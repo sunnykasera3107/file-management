@@ -97,6 +97,23 @@ services:
     volumes:
       - api:/home/app
 
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend-service
+    environment:
+      NEXT_PUBLIC_BACKEND_APP: api
+      NEXT_PUBLIC_BACKEND_APP_PORT: 8083
+      WATCHPACK_POLLING: "true"
+      WATCHPACK_POLLING_INTERVAL: "1000"
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/home/app
+      - /home/app/node_modules/
+
 volumes:
   mysql_data:
   users:
@@ -104,3 +121,4 @@ volumes:
   files:
   storage:
   api:
+  frontend:

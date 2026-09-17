@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gateway.api.annotation.ApiController;
-import com.gateway.api.dto.login.LoginRequest;
-import com.gateway.api.dto.register.RegisterRequest;
+import com.gateway.api.dto.GeneralResponse;
+import com.gateway.api.dto.user.LoginRequest;
+import com.gateway.api.dto.user.RegisterRequest;
+import com.gateway.api.dto.user.UserResponse;
 import com.gateway.api.service.AuthService;
 import com.gateway.api.service.JwtService;
 
@@ -64,6 +66,25 @@ public class AuthController {
     }
 
     @Operation(
+        summary = "Authentication if user already logged in",
+        description = "Check if user already logged in and has session."
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "User already logged in")
+        }
+    )
+    @GetMapping("/authorize")
+    public UserResponse authorize(
+        @Parameter(hidden = true) HttpServletRequest httpRequest
+    )
+        throws Exception
+    {
+        String token = (String) httpRequest.getAttribute("access_token");
+        return authService.getUser(token);
+    }
+
+    @Operation(
         summary = "Register user account",
         description = "Based on user information it register user account.",
         security = {
@@ -76,13 +97,10 @@ public class AuthController {
         }
     )
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(
+    public GeneralResponse registerUser(
         @Valid @RequestBody RegisterRequest request
-    ) throws Exception{
-        Map<String, String> response = authService.registerUser(request);
-        return ResponseEntity.created(null)
-                .body(response);
-                
+    ) {
+        return authService.registerUser(request);
     }
 
     @Operation(
@@ -98,15 +116,16 @@ public class AuthController {
         }
     )
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(
+    public ResponseEntity<UserResponse> loginUser(
         @Valid @RequestBody LoginRequest request
     ) throws Exception {
-        Map<String, String> response = authService.loginUser(request);
-
-        Claims claims = jwtService.extractToken(response.get("token"));
+        GeneralResponse response = authService.loginUser(request);
+        Claims claims = jwtService.extractToken(response.getResponse());
+        
+        UserResponse user = authService.getUser(response.getResponse());
 
         ResponseCookie cookie = ResponseCookie
-                .from("access_token", response.get("token"))
+                .from("access_token", response.getResponse())
                 .httpOnly(true)
                 .secure(false)
                 .sameSite("Lax")
@@ -116,7 +135,7 @@ public class AuthController {
         
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(Map.of("message", "Logged in successfully."));
+                .body(user);
     }
 
     @Operation(
@@ -132,7 +151,7 @@ public class AuthController {
         }
     )
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser(
+    public ResponseEntity<GeneralResponse> logoutUser(
         @Parameter(hidden = true) HttpServletRequest request
     ) {
         ResponseCookie cookie = ResponseCookie
@@ -146,6 +165,6 @@ public class AuthController {
         
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(Map.of("message", "Logged out successfully."));
+                .body(new GeneralResponse("Logged out successfully."));
     }
 }

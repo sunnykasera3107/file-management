@@ -8,12 +8,14 @@ import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gateway.api.annotation.ApiController;
+import com.gateway.api.dto.GeneralResponse;
 import com.gateway.api.dto.file.UploadRequest;
 import com.gateway.api.service.FileService;
 
@@ -62,7 +64,10 @@ public class FileController {
     public ResponseEntity<?> uploadFile(
         @RequestBody UploadRequest file,
         HttpServletRequest httpRequest
-    ) throws Exception {
+    ) throws 
+        FileUploadException,
+        FileNotFoundException
+    {
         if (file.getFile().isEmpty()){
             throw new FileNotFoundException("No file selected to upload");
         }
@@ -71,8 +76,8 @@ public class FileController {
             throw new FileUploadException("Only xlsx files are allowed");
         }
         String token = (String) httpRequest.getAttribute("access_token");
-        Map<String, String> response = fileService.uploadFile(file, token);
-        return ResponseEntity.ok()
+        GeneralResponse response = fileService.uploadFile(file, token);
+        return ResponseEntity.created(null)
                 .body(response);
     }
 
@@ -98,6 +103,28 @@ public class FileController {
     }
 
     @Operation(
+        summary = "Fetch file details",
+        description = "Fetch file by ID."
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "File details"),
+            @ApiResponse(responseCode = "404", description = "File does not exist"),
+            @ApiResponse(responseCode = "500", description = "Server error")
+        }
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<?> fetchFile(
+        @PathVariable("id") String id,
+        HttpServletRequest httpRequest
+    ) throws Exception {
+        String token = (String) httpRequest.getAttribute("access_token");
+        Object response = fileService.getFile(id, token);
+        return ResponseEntity.ok()
+                .body(response);
+    }
+
+    @Operation(
         summary = "Process file",
         description = "Process file to analyse.",
         security = {
@@ -118,7 +145,7 @@ public class FileController {
         HttpServletRequest httpRequest
     ) throws Exception {
         String token = (String) httpRequest.getAttribute("access_token");
-        Map<String, Long> response = fileService.processFile(fileId, token);
+        Map<String, Object> response = fileService.processFile(fileId, token);
         return ResponseEntity.ok()
                 .body(response);
     }
@@ -136,12 +163,12 @@ public class FileController {
         }
     )
     @GetMapping("/process/{processId}/status")
-    public ResponseEntity<?> getProcessStatus(
+    public ResponseEntity<GeneralResponse> getProcessStatus(
         @RequestParam("processId") Long jobId,
         HttpServletRequest httpRequest
     ) throws Exception {
         String token = (String) httpRequest.getAttribute("access_token");
-        Map<String, String> response = fileService.getProcessStatus(jobId, token);
+        GeneralResponse response = fileService.getProcessStatus(jobId, token);
         return ResponseEntity.ok()
                 .body(response);
     }
@@ -163,12 +190,12 @@ public class FileController {
         }
     )
     @PostMapping("/process/restart")
-    public ResponseEntity<?> restartProcessStatus(
+    public ResponseEntity<GeneralResponse> restartProcessStatus(
         @RequestParam("processId") Long jobId,
         HttpServletRequest httpRequest
     ) throws Exception {
         String token = (String) httpRequest.getAttribute("access_token");
-        Map<String, String> response = fileService.restartProcess(jobId, token);
+        GeneralResponse response = fileService.restartProcess(jobId, token);
         return ResponseEntity.ok()
                 .body(response);
     }

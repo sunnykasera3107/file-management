@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.boot.context.config.ConfigData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -29,27 +31,28 @@ public class SecurityConfig{
     
     @Bean
     public SecurityFilterChain ApiSecurityFilterChain(
-        HttpSecurity http
+        HttpSecurity http,
+        CsrfTokenRepository csrfTokenRepository
     ) throws Exception {
         http
             .csrf( csrf -> csrf
                 .requireCsrfProtectionMatcher(
                     new ApiControllerCsrfMatcher()
                 )
-                .csrfTokenRepository(
-                    CookieCsrfTokenRepository.withHttpOnlyFalse()
-                )
+                .csrfTokenRepository(csrfTokenRepository)
             )
-            // .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(apiCorsConfig()))
             .authorizeHttpRequests(
                 auth -> auth
-                    .requestMatchers("/csrf").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html"
                     ).permitAll()
                     .requestMatchers(
+                        "/api/v1/authenticate",
+                        "/api/v1/csrf",
                         "/api/v1/register",
                         "/api/v1/login",
                         "/api/v1/logout"
@@ -64,39 +67,47 @@ public class SecurityConfig{
         return http.build();
     }
 
-    // @Bean
-    // public CorsConfigurationSource apiCorsConfig() {
-    //     CorsConfiguration configuration = new CorsConfiguration();
+    @Bean
+    public CookieCsrfTokenRepository csrfTokenRepository() {
+        CookieCsrfTokenRepository repository =
+                CookieCsrfTokenRepository.withHttpOnlyFalse();
 
-    //     configuration.setAllowedOrigins(
-    //         List.of(
-    //             "http://localhost:3000"
-    //         )
-    //     );
+        repository.setCookiePath("/");
 
-    //     configuration.setAllowedMethods(
-    //         List.of(
-    //             "GET",
-    //             "POST",
-    //             "PUT",
-    //             "DELETE"
-    //         )
-    //     );
+        return repository;
+    }
 
-    //     configuration.setAllowedHeaders(
-    //         List.of(
-    //             "Authorization",
-    //             "Cache-Control",
-    //             "Content-Type",
-    //             "X-XSRF-TOKEN",
-    //         )
-    //     );
+    @Bean
+    public CorsConfigurationSource apiCorsConfig() {
+        CorsConfiguration configuration = new CorsConfiguration();
 
-    //     configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(
+            List.of(
+                "http://localhost:3000"
+            )
+        );
 
-    //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    //     source.registerCorsConfiguration("/**", configuration);
+        configuration.setAllowedMethods(
+            List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "OPTIONS"
+            )
+        );
 
-    //     return source;
-    // }
+        configuration.setAllowedHeaders(
+            List.of("*")
+        );
+
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+    
 }

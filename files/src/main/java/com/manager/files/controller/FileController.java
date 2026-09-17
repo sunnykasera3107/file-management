@@ -1,8 +1,11 @@
 package com.manager.files.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
+import javax.management.RuntimeErrorException;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -11,11 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.manager.files.dto.ListFilesResponse;
+import com.manager.files.dto.FilesResponse;
+import com.manager.files.dto.GeneralResponse;
 import com.manager.files.dto.ProcessFileRequest;
 import com.manager.files.dto.ProcessRestartRequest;
 import com.manager.files.model.FileDocument;
@@ -39,7 +42,7 @@ public class FileController {
     }
     
     @PostMapping
-    public Map<String, String> uploadFile(
+    public GeneralResponse uploadFile(
         @RequestBody MultipartFile file,
         @AuthenticationPrincipal Jwt jwt
     ) throws IOException {
@@ -48,36 +51,44 @@ public class FileController {
             return fileService.uploadFile(file, jwt.getSubject());
         }
 
-        return Map.of("message", "No file to upload");
+        throw new FileNotFoundException("No file selected to upload");
     }
 
     @GetMapping
-    public List<ListFilesResponse> getFiles(
+    public List<FilesResponse> getFiles(
         @AuthenticationPrincipal Jwt jwt
     ) {
        return fileService.getFiles(jwt.getSubject());
     }
 
+    @GetMapping("/{id}")
+    public FilesResponse getFiles(
+        @PathVariable("id") String id,
+        @AuthenticationPrincipal Jwt jwt
+    ) {
+       FilesResponse file = fileService.getFile(id);
+       return file;
+    }
+
     @PostMapping("/process")
-    public Map<String, Long> processFile(
+    public FilesResponse processFile(
         @RequestBody ProcessFileRequest request
     ) throws Exception {
-        return fileAnalysisService.processFile(request.getFileId());
+        fileAnalysisService.processFile(request.getFileId());
+        return fileService.getFile(request.getFileId());
     }
 
     @GetMapping("/process/{id}/status")
-    public Map<String, String> getFileStatus(
+    public GeneralResponse getFileStatus(
         @PathVariable("id") long id
     ) throws Exception {
         return fileAnalysisService.getJobStatus(id);
     }
 
     @PostMapping("/process/restart")
-    public Map<String, String> restartJob(
+    public GeneralResponse restartJob(
         @RequestBody ProcessRestartRequest request
     ) throws Exception {
-        System.out.println(request.getId());
-        Map<String, String> response = fileAnalysisService.restartJob(request.getId());
-        return response;
+        return fileAnalysisService.restartJob(request.getId());
     }
 }

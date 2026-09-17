@@ -13,11 +13,10 @@ public class ApiControllerCsrfMatcher
         String method = request.getMethod();
 
         // Only protect state-changing requests
-        if (!"POST".equalsIgnoreCase(method)
-                && !"PUT".equalsIgnoreCase(method)
-                && !"PATCH".equalsIgnoreCase(method)
-                && !"DELETE".equalsIgnoreCase(method)) {
-
+         if ("GET".equalsIgnoreCase(method)
+            || "HEAD".equalsIgnoreCase(method)
+            || "OPTIONS".equalsIgnoreCase(method)
+            || "TRACE".equalsIgnoreCase(method)) {
             return false;
         }
 
