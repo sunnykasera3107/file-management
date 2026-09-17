@@ -2,7 +2,6 @@ package com.manager.files.batch.Writer;
 
 import java.util.Map;
 
-import org.bson.types.ObjectId;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.infrastructure.item.Chunk;
 import org.springframework.batch.infrastructure.item.ItemWriter;

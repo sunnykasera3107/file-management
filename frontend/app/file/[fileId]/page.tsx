@@ -17,7 +17,8 @@ export default function ViewFile() {
     const [file, setFile] = useState<File>();
     const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
     const router = useRouter();
-    const [firstCol, setFirstCol] = useState<Object>();
+    const [count, setCount] = useState<Object>();
+    const [process, setProcess] = useState<string>();
 
     
     useEffect(() => {
@@ -28,8 +29,12 @@ export default function ViewFile() {
             const response = await getFile(fileId);
             setFile(response);
             if (response.columnAnalysis) {
-                const [key, value] = Object.entries(response.columnAnalysis)[0];
-                setFirstCol(value);
+                console.log(response.columnAnalysis)
+                const maxValue = Object.values(response.columnAnalysis).reduce(
+                    (max, column) => Math.max(max, column.count),
+                    0
+                )
+                setCount(maxValue);
             }
         }
         if (fileId && fileId != null) {
@@ -39,11 +44,28 @@ export default function ViewFile() {
 
     const handleProcess = async () => {
         const response = await processFile(fileId);
-        file.metadata.status = "In process";
+        setProcess("In process");
         setFile(file);
         if (response.columnAnalysis) {
-            const [key, value] = Object.entries(response.columnAnalysis)[0];
-            setFirstCol(value);
+            const maxValue = Object.values(response.columnAnalysis).reduce(
+                (max, column) => Math.max(max, column.count),
+                0
+            )
+            setCount(maxValue);
+        }
+    }
+
+    const loadAnalysis = async () => {
+        const response = await getFile(fileId);
+        setFile(response);
+        if (response.columnAnalysis) {
+            console.log(response.columnAnalysis)
+            const maxValue = Object.values(response.columnAnalysis).reduce(
+                (max, column) => Math.max(max, column.count),
+                0
+            )
+            setCount(maxValue);
+            setProcess(null);
         }
     }
 
@@ -61,22 +83,37 @@ export default function ViewFile() {
                                 { (file.metadata && "status" in file.metadata) ? 
                                     (<span className="text-green-700 ml-3">Process {file.metadata.status}</span> )
                                     : 
-                                    (<Button onClick={handleProcess} className="ml-3 bg-gray-700 border-0 rounded-none w-[60px]">Process</Button>)
+                                    ((process == null) ? 
+                                        (<Button onClick={handleProcess} className="ml-3 bg-gray-700 border-0 rounded-none w-[60px]">Process</Button>)
+                                        : 
+                                        (<span className="ml-5 text-green-700 text-md">{process}</span>)
+                                    )
                                 }
                             </div>
                         )}
                         {
-                            (firstCol && "count" in firstCol) && 
+                            (count) && 
                             <div>
                                 <Link href="/">Back to dashboard</Link>
-                                {/* <span className="text-green-700 ml-3">Total {firstCol.count} Rows</span> */}
+                                <span className="text-green-700 ml-3">Total {count} Rows</span>
                             </div>
                         }
                     </div>
                     <div className="flex justify-center content-center flex-wrap mt-5">
                         {
-                            (file.columnAnalysis) && 
-                            Object.entries(file.columnAnalysis).map(([key, value]) => {
+                            (process && process != null) &&
+                             (
+                                <div className="h-[250px] flex justify-center items-center">
+                                <Button onClick={loadAnalysis} className="ml-3 bg-gray-700/50 border-gray-300 hover:bg-gray-700/10 cursor-pointer border-1 rounded-none w-[100px] h-[100px] flex justify-center items-center rounded-full">
+                                    Refresh
+                                </Button>
+                                </div>
+                             )
+                        }
+                        {
+                            (file.columnAnalysis) &&
+                            
+                            (Object.entries(file.columnAnalysis).map(([key, value]) => {
                                 return (
                                     <div key={key} className="w-[200px] flex justify-center content-start min-h-[150px] flex-wrap mb-5 border-1 rounded-xl mx-2 bg-gray-900/50 p-3">
                                         <h3 className="text-[14px]">{value.columnName} <span className="text-[11px] text-yellow-300">({value.dataType} DATA)</span></h3>
@@ -104,7 +141,7 @@ export default function ViewFile() {
                                         }
                                     </div>
                                 )
-                            })
+                            }))
                         }
                     </div>
                     </>

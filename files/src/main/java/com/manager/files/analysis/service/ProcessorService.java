@@ -43,20 +43,25 @@ public class ProcessorService {
             isHeader = false;
             return columnMetaData;
         }
-
         
-        for (Cell cell: row) {
-            if (cell.toString().isBlank()) {
+        for (Map.Entry<Integer, String> entry : columnKeys.entrySet()) {
+             int columnIndex = entry.getKey();
+             String slug = entry.getValue();
+             
+             Cell cell = row.getCell(
+                 columnIndex,
+                 Row.MissingCellPolicy.RETURN_BLANK_AS_NULL
+            );
+            
+            // String slug = columnKeys.get(columnIndex);
+            FileMetaData columnData = columnMetaData.get(slug);
+                        
+            if (cell == null || cell.getCellType() == CellType.BLANK || cell.toString().isBlank()) {
+                columnData.setNullCount(columnData.getNullCount() + 1);
                 continue;
             }
-            String slug = columnKeys.get(cell.getColumnIndex());
-            FileMetaData columnData = columnMetaData.get(slug);
-
+            
             columnData.setCount(columnData.getCount() + 1);
-           
-            if (cell == null || cell.getCellType() == CellType.BLANK) {
-                columnData.setNullCount(columnData.getNullCount() + 1);
-            }
 
             columnData.setDataType(cell.getCellType().toString());
 

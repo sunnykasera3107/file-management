@@ -5,17 +5,20 @@ import { registerService } from "@/services/auth/register";
 import { RootState } from "@/store/store";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
 export default function Register() {
+    const emailRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
+
     const [form, setForm] = useState<UserSchema>({
         fullname: null,
         email: null,
         phone: null,
         password: null
     });
-    const [message, setMessage] = useState(null);
+    const [message, setMessage] = useState<string|null>(null);
     
     const router = useRouter();
     const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn );
@@ -24,6 +27,15 @@ export default function Register() {
         if (isLoggedIn) {
             router.replace("/");
         }
+        const timer = setTimeout(() => {
+            setForm(prev => ({
+                ...prev,
+                email: emailRef.current?.value || prev.email,
+                password: passwordRef.current?.value || prev.password
+            }));
+        }, 100);
+
+            return () => clearTimeout(timer);
     }, [isLoggedIn, router]);
 
     async function handleSubmit(){
@@ -34,7 +46,7 @@ export default function Register() {
             setMessage(response.message);
             router.replace("/login");
         } else {
-            result.error.issues.map((errorDetails) => {
+            result.error.issues.map((errorDetails: any) => {
                 setMessage(errorDetails.message);
             })
         }
