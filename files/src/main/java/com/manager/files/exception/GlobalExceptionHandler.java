@@ -1,57 +1,72 @@
 package com.manager.files.exception;
 
-import java.time.LocalDateTime;
-import java.util.Map;
-
 import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.launch.JobRestartException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.manager.files.dto.GeneralExceptionResponse;
     
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(JobInstanceAlreadyCompleteException.class)
-    public ResponseEntity<Map<String, Object>> handleJobAlreadyComplete(
+    public ResponseEntity<GeneralExceptionResponse> handleJobAlreadyComplete(
             JobInstanceAlreadyCompleteException ex) {
-
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(Map.of(
-                        "timestamp", LocalDateTime.now(),
-                        "status", 409,
-                        "error", "Job Already Completed",
-                        "message", ex.getMessage()
-                ));
+            .status(409)
+            .body(
+                new GeneralExceptionResponse(
+                    409,
+                    "Job already completed",
+                    ex.getMessage()
+                )
+            );
     }
 
     @ExceptionHandler(JobRestartException.class)
-    public ResponseEntity<Map<String, Object>> handleJobRestart(
+    public ResponseEntity<GeneralExceptionResponse> handleJobRestart(
             JobRestartException ex) {
-
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(Map.of(
-                        "timestamp", LocalDateTime.now(),
-                        "status", 409,
-                        "error", "Job Cannot Be Restarted",
-                        "message", ex.getMessage()
-                ));
+        
+       return ResponseEntity
+            .status(409)
+            .body(
+                new GeneralExceptionResponse(
+                    409,
+                    "Job cannot be restarted",
+                    ex.getMessage()
+                )
+            );
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGenericException(
+    public ResponseEntity<GeneralExceptionResponse> handleGenericException(
+            Exception ex) {
+        return ResponseEntity
+            .status(500)
+            .body(
+                new GeneralExceptionResponse(
+                    500,
+                    "Internal server error",
+                    ex.getMessage()
+                )
+            );
+    }
+
+    @ExceptionHandler(FileAlreadyExistException.class)
+    public ResponseEntity<GeneralExceptionResponse> handleFileAlreadyExistException(
             Exception ex) {
 
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of(
-                        "timestamp", LocalDateTime.now(),
-                        "status", 500,
-                        "error", "Internal Server Error",
-                        "message", ex.getMessage()
-                ));
+            .status(409)
+            .body(
+                new GeneralExceptionResponse(
+                    409,
+                    "File already exist",
+                    ex.getMessage()
+                )
+            );
     }
+
 }

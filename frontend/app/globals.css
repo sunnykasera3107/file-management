@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+@theme {
+  --font-display: "Oswald", sans-serif;
+  --font-display--font-feature-settings: "cv02", "cv03", "cv04", "cv11"; 
+  --font-display--font-variation-settings: "opsz" 32; 
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-display);
+}
+
+
+
+
+.form input[type=text],
+.form input[type=email],
+.form input[type=password] {
+  @apply block w-full rounded-md bg-white/5 px-2 py-2 my-3 text-gray-50 outline-1 -outline-offset-1 outline-blue-950/20 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-gray-950 
+}
+.form button, .form .button { @apply relative rounded-none bg-gray-800 px-7 py-3 text-white text-center transition hover:bg-gray-700; }
+
+table{ @apply border-3 w-[100%] p-5 m-auto}
+table tr:nth-child(even){ @apply bg-slate-900}
+table thead{ @apply border-b-3 }
+table td{ @apply p-1}

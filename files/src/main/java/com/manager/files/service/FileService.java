@@ -1,5 +1,4 @@
 package com.manager.files.service;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,7 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.manager.files.dto.ListFilesResponse;
+import com.manager.files.dto.FilesResponse;
+import com.manager.files.dto.GeneralResponse;
+import com.manager.files.exception.FileAlreadyExistException;
 import com.manager.files.model.FileDocument;
 import com.manager.files.repository.FileRepository;
 
@@ -31,11 +32,17 @@ public class FileService {
 
     private final FileRepository fileRepository;
 
-    public FileService(FileRepository fileRepository) {
+    private final FileAnalysisService fileAnalysisService;
+
+    public FileService(
+        FileRepository fileRepository,
+        FileAnalysisService fileAnalysisService
+    ) {
         this.fileRepository = fileRepository;
+        this.fileAnalysisService = fileAnalysisService;
     }
     
-    public Map<String, String> uploadFile( 
+    public GeneralResponse uploadFile( 
         MultipartFile file,
         String userId
     ) throws IOException {
@@ -74,10 +81,10 @@ public class FileService {
             );
 
             if (saved) {
-                return Map.of("message", "File uploaded successfully.");
+                return new GeneralResponse("File uploaded successfully.");
             }
         }
-        return Map.of("message", "File not uploaded.");
+        throw new RuntimeException("File not uploaded.");
     }
 
     public boolean saveFileInfo(
@@ -87,15 +94,14 @@ public class FileService {
         String userId,
         int fileHash
     ) {
-        ListFilesResponse existingFile = fileRepository
+        FilesResponse existingFile = fileRepository
                 .findByFilename(filename);
 
         if (existingFile != null) {
             if (!existingFile.getMetadata().isEmpty()){
                 int existingFileHash = (Integer) existingFile.getMetadata().get("hash");
                 if (existingFileHash == fileHash) {
-                    System.out.println("File already exist");
-                    return false;
+                    throw new FileAlreadyExistException("File already exist");
                 }
             }
         }
@@ -111,13 +117,36 @@ public class FileService {
         file.setMetadata(metaData);
         FileDocument savedFile = fileRepository.save(file);
         if (savedFile != null) {
-            System.out.println(savedFile.toString());
             return true;
         }
-        return false;
+        throw new RuntimeException("File not saved");
     }
 
-    public List<ListFilesResponse> getFiles(String userId) {
+    public List<FilesResponse> getFiles(String userId) {
         return fileRepository.findByUserId(userId);
+    }
+
+    public FilesResponse getFile(String id) {
+        FileDocument file = fileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("File not found"));
+
+        FilesResponse fr = new FilesResponse();
+        fr.setId(id);
+        fr.setFilename(file.getFilename());
+        fr.setSize(file.getSize());
+        fr.setColumnAnalysis(file.getColumnAnalysis());
+        
+        if (file.getMetadata().containsKey("jobId")) {
+            Map<String, Object> metadata = file.getMetadata();
+            GeneralResponse status = fileAnalysisService.getJobStatus(
+                Long.parseLong(metadata.get("jobId").toString())
+            );
+            metadata.put("status", status.getResponse());
+            file.setMetadata(metadata);
+        }
+
+        fr.setMetadata(file.getMetadata());
+
+        return fr;
     }
 }

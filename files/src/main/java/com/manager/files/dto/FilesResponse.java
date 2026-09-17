@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ListFilesResponse {
+public class FilesResponse {
     private String id;
     private String filename;
     private Long size;

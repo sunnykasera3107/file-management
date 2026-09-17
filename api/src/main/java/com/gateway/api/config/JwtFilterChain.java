@@ -1,8 +1,11 @@
 package com.gateway.api.config;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -11,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.gateway.api.service.JwtService;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -27,6 +31,24 @@ public class JwtFilterChain extends OncePerRequestFilter{
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+
+        String uri = request.getRequestURI();
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
+        return uri.startsWith("/swagger-ui/")
+                || uri.startsWith("/v3/api-docs/")
+                || uri.equals("/swagger-ui.html")
+                || uri.equals("/api/v1/csrf")
+                || uri.equals("/api/v1/login")
+                || uri.equals("/api/v1/register")
+                || uri.equals("/api/v1/logout");
+    }
+
+    @Override
     public void doFilterInternal(
         HttpServletRequest request,
         HttpServletResponse response,
@@ -34,23 +56,32 @@ public class JwtFilterChain extends OncePerRequestFilter{
     ) throws IOException, ServletException{
 
         String token = getJwtFromCookie(request);
+        
+        try{
+            if (token != null) {
+                Claims claims = jwtService.extractToken(token);
+                String userId = claims.getSubject();
 
-        request.setAttribute("access_token", token);
+                request.setAttribute("access_token", token);
+                
+                UsernamePasswordAuthenticationToken authentication = 
+                    new UsernamePasswordAuthenticationToken(
+                        userId,
+                        null,
+                        Collections.emptyList()
+                    );
 
-        if (token != null) {
-            Claims claims = jwtService.extractToken(token);
-            String userId = claims.getSubject();
-
-            UsernamePasswordAuthenticationToken authentication = 
-                new UsernamePasswordAuthenticationToken(
-                    userId,
-                    null,
-                    Collections.emptyList()
-                );
-
-            SecurityContextHolder
-                .getContext()
-                .setAuthentication(authentication);
+                SecurityContextHolder
+                    .getContext()
+                    .setAuthentication(authentication);
+            }
+        } catch (ExpiredJwtException ex) {
+            clearAccessTokenCookie(response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("""
+                {"error":"TOKEN_EXPIRED"}
+            """);
         }
 
         filterChain.doFilter(request, response);
@@ -71,5 +102,23 @@ public class JwtFilterChain extends OncePerRequestFilter{
 
         return null;
     }
-    
+
+    private void clearAccessTokenCookie(
+            HttpServletResponse response) {
+
+        ResponseCookie cookie = ResponseCookie
+                .from("access_token", "")
+                .httpOnly(true)
+                .secure(false) // true in production HTTPS
+                .path("/")
+                .maxAge(Duration.ZERO)
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                cookie.toString()
+        );
+    }
+        
 }
