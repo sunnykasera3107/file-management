@@ -1,2 +1,7 @@
-node_modules
-node_modules/**
+# Sensitive files - never commit
+*.pem
+*.key
+private_key*
+public_key*
+.env
+.env.local
