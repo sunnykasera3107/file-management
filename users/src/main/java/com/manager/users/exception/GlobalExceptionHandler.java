@@ -14,13 +14,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponse> handleException(
         Exception ex
     ) {
+        System.out.println(ex.getMessage());
         return ResponseEntity
             .status(500)
             .body(
                 new GeneralExceptionResponse(
                     500,
                     "Internal Server Error",
-                    ex.getMessage()
+                    "Something went wrong."
                 )
             );
     }
@@ -35,7 +36,7 @@ public class GlobalExceptionHandler {
                 new GeneralExceptionResponse(
                     404,
                     "User not found",
-                    ex.getMessage()
+                    "User not found with given information name"
                 )
             );
     }
@@ -50,7 +51,7 @@ public class GlobalExceptionHandler {
                 new GeneralExceptionResponse(
                     409,
                     "User already exist",
-                    ex.getMessage()
+                    "Usre already exist with given email address"
                 )
             );
     }
