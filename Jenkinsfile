@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+     environment {
+        MYSQL_HOST=localhost
+        APIGATEWAY=localhost
+        MySQL_DATABASE=user_manager
+        MySQL_USERNAME=who_will_manage
+        MySQL_PASSWORD='whose_Secrets'
+    }
+
     stages {
         
         stage('Checkout') {
