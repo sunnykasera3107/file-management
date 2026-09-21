@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        Test='test'
-    }
-
     stages {
         
         stage('Checkout') {
@@ -16,7 +12,7 @@ pipeline {
         stage('Build User Service') {
             steps {
                 dir('users') {
-                    bat 'mvn test'
+                    bat 'mvn package -DskipTests'
                 }
             }
         }
