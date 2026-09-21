@@ -17,7 +17,13 @@ pipeline {
                     bat 'docker compose down -v'
                 }
 
-                bat 'docker network inspect file-management-network >nul 2>&1 && docker network rm file-management-network'
+                bat '''
+                    docker network inspect file-management-network >nul 2>&1
+                    if %ERRORLEVEL% EQU 0 (
+                        docker network rm file-management-network
+                    )
+                    exit /b 0
+                '''
             }
         }
 
