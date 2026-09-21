@@ -66,5 +66,21 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker Build') {
+            step {
+                dir('users') {
+                    bat 'docker build -t file-management-users:${BUILD_NUMBER} .'
+                }
+            }
+        }
+
+        stage('Docker Run') {
+            step {
+                dir('users') {
+                    bat 'docker run -p 8081:8080 file-management-users:${BUILD_NUMBER}'
+                }
+            }
+        }
     }
 }
