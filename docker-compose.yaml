@@ -2,9 +2,10 @@ services:
   usermanagement:
     build: ./users
     container_name: usermanagement
+    networks:
+      - file-management-network
     ports:
-      - 8081:8080
-    
+      - 8081:8080    
     environment:
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_ROOT_PASS: ${MYSQL_ROOT_PASSWORD}
@@ -19,6 +20,8 @@ services:
   files:
     build: ./files
     container_name: filemanagement
+    networks:
+      - file-management-network
     ports:
       - 8082:8080
     environment:
@@ -38,6 +41,8 @@ services:
   api:
     build: ./api
     container_name: apigateway
+    networks:
+      - file-management-network
     ports:
       - 8083:8080
     environment:
@@ -57,11 +62,17 @@ services:
       WATCHPACK_POLLING: "true"
       WATCHPACK_POLLING_INTERVAL: "1000"
       CHOKIDAR_USEPOLLING: "true"
+    networks:
+      - file-management-network
     ports:
       - 3000:3000
     volumes:
       - ./frontend:/home/app
       - /home/app/node_modules/
+
+networks:
+  file-management-network:
+    external: true
 
 volumes:
   users:

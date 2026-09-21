@@ -9,14 +9,21 @@ pipeline {
             }
         }
 
-        stage('Setup Infrastructure') {
+        stage('Remove Old Infrastructure') {
             steps {
-                
                 bat 'docker compose down -v'
                 
                 dir("database") {
                     bat 'docker compose down -v'
                 }
+
+                bat 'docker network rm file-management-network'
+            }
+        }
+
+        stage('Setup Infrastructure') {
+            steps {
+                bat 'docker network create file-management-network'
                 
                 dir("database") {
                     bat 'docker compose up --build -d'
@@ -35,6 +42,7 @@ pipeline {
                     dir('database') {
                         bat 'docker compose down -v'
                     }
+                    bat 'docker network rm file-management-network'
                 }
                 always {
                     echo 'Database always works'
@@ -134,6 +142,7 @@ pipeline {
                     dir("database") {
                         bat 'docker compose down -v'
                     }
+                    bat 'docker network rm file-management-network'
                 }
 
                 always {

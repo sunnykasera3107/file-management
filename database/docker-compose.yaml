@@ -7,6 +7,8 @@ services:
       MYSQL_DATABASE: ${MySQL_DATABASE}
       MYSQL_USER: ${MySQL_USERNAME}
       MYSQL_PASSWORD: ${MySQL_PASSWORD}
+    networks:
+      - file-management-network
     ports:
       - 3306:3306
     command: --init-file=/tmp/.init.sql
@@ -29,6 +31,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    networks:
+      - file-management-network
     ports:
       - "27027:27017"
     volumes:
@@ -40,6 +44,10 @@ services:
       timeout: 10s
       retries: 5
       start_period: 5s
+
+networks:
+  file-management-network:
+    external: true
 
 volumes:
   mysql_data:
