@@ -9,9 +9,43 @@ pipeline {
             }
         }
 
-        stage('Compile User Service') {
+        stage('Setup Infrastructure') {
+            steps {
+                dir("database") {
+                    bat 'docker compose up --build -d'
+                }
+
+                sleep(15)
+            }
+
+            post {
+                success {
+                    echo 'Database initiated.'
+                }
+
+                failure {
+                    echo 'Failed to start databases'
+                    dir('database') {
+                        bat 'docker compose down -v'
+                    }
+                }
+                always {
+                    echo 'Database always works'
+                }
+            }
+        }
+
+        stage('Compile Services') {
             steps {
                 dir('users') {
+                    bat 'mvn clean compile -DskipTests'
+                }
+
+                dir('files') {
+                    bat 'mvn clean compile -DskipTests'
+                }
+
+                dir('api') {
                     bat 'mvn clean compile -DskipTests'
                 }
             }
@@ -19,9 +53,17 @@ pipeline {
 
         stage('Parallel checks') {
             parallel {
-                stage('Test User Service') {
+                stage('Test Service') {
                     steps {
                         dir('users') {
+                            bat 'mvn test'
+                        }
+
+                        dir('files') {
+                            bat 'mvn test'
+                        }
+
+                        dir('api') {
                             bat 'mvn test'
                         }
                     }
@@ -32,12 +74,28 @@ pipeline {
                         dir('users') {
                             bat 'mvn verify -DskipTests'
                         }
+
+                        dir('files') {
+                            bat 'mvn verify -DskipTests'
+                        }
+
+                        dir('api') {
+                            bat 'mvn verify -DskipTests'
+                        }
                     }
                 }
 
                 stage('Security scan') {
                     steps {
                         dir('users') {
+                            bat 'mvn dependency:tree'
+                        }
+
+                        dir('files') {
+                            bat 'mvn dependency:tree'
+                        }
+
+                        dir('api') {
                             bat 'mvn dependency:tree'
                         }
                     }
@@ -50,6 +108,20 @@ pipeline {
                 dir('users') {
                     bat 'mvn package -DskipTests'
                 }
+
+                dir('files') {
+                    bat 'mvn package -DskipTests'
+                }
+
+                dir('api') {
+                    bat 'mvn package -DskipTests'
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                bat 'docker compose up --build -d'
             }
 
             post {
@@ -59,26 +131,11 @@ pipeline {
 
                 failure {
                     echo 'CI pipeline failed'
+                    bat 'docker compose down -v'
                 }
 
                 always {
                     junit 'users/target/surefire-reports/*.xml'
-                }
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                dir('users') {
-                    bat 'docker build -t file-management-users:%BUILD_NUMBER% .'
-                }
-            }
-        }
-
-        stage('Docker Run') {
-            steps {
-                dir('users') {
-                    bat 'docker run -p 8081:8080 file-management-users:%BUILD_NUMBER%'
                 }
             }
         }

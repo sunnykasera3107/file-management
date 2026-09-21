@@ -2,12 +2,12 @@ FROM maven:3.9-eclipse-temurin-21
 
 WORKDIR /home/app
 
-COPY pom.xml .
+# COPY pom.xml .
 
-RUN mvn dependency:go-offline
+# RUN mvn dependency:go-offline
 
-COPY src ./src
+COPY target/*.jar api-app.jar
 
-RUN mvn clean package -DskipTests
+# RUN mvn clean package -DskipTests
 
-CMD ["java", "-jar", "target/api-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "api-app.jar"]
