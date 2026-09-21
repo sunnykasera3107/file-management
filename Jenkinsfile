@@ -70,7 +70,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 dir('users') {
-                    bat 'docker build -t file-management-users:%BUILD_NUMBER .'
+                    bat 'docker build -t file-management-users:%BUILD_NUMBER% .'
                 }
             }
         }
@@ -78,7 +78,7 @@ pipeline {
         stage('Docker Run') {
             steps {
                 dir('users') {
-                    bat 'docker run -p 8081:8080 file-management-users:%BUILD_NUMBER'
+                    bat 'docker run -p 8081:8080 file-management-users:%BUILD_NUMBER%'
                 }
             }
         }
