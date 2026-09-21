@@ -17,7 +17,7 @@ pipeline {
             }
         }
 
-        stage("Parallel checks") {
+        stage('Parallel checks') {
             parallel {
                 stage('Test User Service') {
                     steps {
@@ -68,7 +68,7 @@ pipeline {
         }
 
         stage('Docker Build') {
-            step {
+            steps {
                 dir('users') {
                     bat 'docker build -t file-management-users:${BUILD_NUMBER} .'
                 }
@@ -76,7 +76,7 @@ pipeline {
         }
 
         stage('Docker Run') {
-            step {
+            steps {
                 dir('users') {
                     bat 'docker run -p 8081:8080 file-management-users:${BUILD_NUMBER}'
                 }
