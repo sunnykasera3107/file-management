@@ -11,6 +11,13 @@ pipeline {
 
         stage('Setup Infrastructure') {
             steps {
+                
+                bat 'docker compose down -v'
+                
+                dir("database") {
+                    bat 'docker compose down -v'
+                }
+                
                 dir("database") {
                     bat 'docker compose up --build -d'
                 }
@@ -124,6 +131,9 @@ pipeline {
                 failure {
                     echo 'CI pipeline failed'
                     bat 'docker compose down -v'
+                    dir("database") {
+                        bat 'docker compose down -v'
+                    }
                 }
 
                 always {
