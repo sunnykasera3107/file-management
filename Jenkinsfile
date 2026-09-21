@@ -34,7 +34,7 @@ pipeline {
                 }
 
                 always {
-                    junit 'target/surefire-reports/*.xml'
+                    junit 'users/target/surefire-reports/*.xml'
                 }
             }
         }
