@@ -17,7 +17,6 @@ pipeline {
                     bat 'docker compose down -v'
                 }
 
-                bat 'docker network rm file-management-network'
             }
         }
 
@@ -142,7 +141,6 @@ pipeline {
                     dir("database") {
                         bat 'docker compose down -v'
                     }
-                    bat 'docker network rm file-management-network'
                 }
 
                 always {
