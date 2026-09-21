@@ -51,20 +51,19 @@ pipeline {
                     bat 'mvn package -DskipTests'
                 }
             }
-        }
 
+            post {
+                success {
+                    echo 'CI pipeline succeeded'
+                }
 
-        post {
-            success {
-                echo 'CI pipeline succeeded'
-            }
+                failure {
+                    echo 'CI pipeline failed'
+                }
 
-            failure {
-                echo 'CI pipeline failed'
-            }
-
-            always {
-                junit 'users/target/surefire-reports/*.xml'
+                always {
+                    junit 'users/target/surefire-reports/*.xml'
+                }
             }
         }
     }
