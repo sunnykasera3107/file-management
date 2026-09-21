@@ -23,6 +23,20 @@ pipeline {
                     bat 'mvn test'
                 }
             }
+
+            post {
+                success {
+                    echo 'CI pipeline succeeded'
+                }
+
+                failure {
+                    echo 'CI pipeline failed'
+                }
+
+                always {
+                    echo 'Pipeline finished'
+                }
+            }
         }
     }
 }
