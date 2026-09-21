@@ -38,7 +38,7 @@ public class UserServiceTest {
             "Mocker Test"
         );
         user.setId(id);
-        user.setPhone("+11111111111");
+        user.setPhone("+111111111112");
 
         // Arrange
         when(userRepository.findById(id))
