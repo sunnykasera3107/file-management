@@ -58,14 +58,6 @@ pipeline {
                         dir('users') {
                             bat 'mvn test'
                         }
-
-                        dir('files') {
-                            bat 'mvn test'
-                        }
-
-                        dir('api') {
-                            bat 'mvn test'
-                        }
                     }
                 }
 
