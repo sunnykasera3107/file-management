@@ -18,10 +18,10 @@ import com.manager.files.dto.FilesResponse;
 import com.manager.files.dto.GeneralResponse;
 import com.manager.files.dto.ProcessFileRequest;
 import com.manager.files.dto.ProcessRestartRequest;
+import com.manager.files.kafka.service.KafkaService;
 import com.manager.files.model.FileDocument;
 import com.manager.files.service.FileAnalysisService;
 import com.manager.files.service.FileService;
-import com.manager.files.service.KafkaService;
 
 @RestController
 @RequestMapping("/file")

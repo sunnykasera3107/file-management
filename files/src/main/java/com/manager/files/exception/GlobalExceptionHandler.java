@@ -43,13 +43,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GeneralExceptionResponse> handleGenericException(
             Exception ex) {
+                System.out.println(ex.getMessage());
         return ResponseEntity
             .status(500)
             .body(
                 new GeneralExceptionResponse(
                     500,
                     "Internal server error",
-                    ex.getMessage()
+                    "Something went wrong"
                 )
             );
     }

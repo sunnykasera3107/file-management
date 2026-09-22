@@ -1,7 +1,9 @@
-package com.manager.files.service;
+package com.manager.files.kafka.service;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import com.manager.files.kafka.topics.KafkaTopics;
 
 @Service 
 public class KafkaService {
@@ -13,8 +15,9 @@ public class KafkaService {
     }
 
     public void send(String fileId) {
+        System.out.println(fileId);
         kafkaTemplate.send(
-            "file-process", 
+            KafkaTopics.FILE_PROCESSING, 
             fileId
         );
     }

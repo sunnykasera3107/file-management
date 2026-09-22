@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.manager.files.dto.GeneralResponse;
 import com.manager.files.dto.ProcessFileResponse;
+import com.manager.files.kafka.topics.KafkaTopics;
 import com.manager.files.model.FileDocument;
 import com.manager.files.repository.FileRepository;
 
@@ -44,7 +45,7 @@ public class FileAnalysisService {
     }
 
     @KafkaListener(
-        topics = "file-process"
+        topics = KafkaTopics.FILE_PROCESSING
     )
     public ProcessFileResponse processFile(
         String fileId
