@@ -18,8 +18,10 @@ import com.manager.files.dto.FilesResponse;
 import com.manager.files.dto.GeneralResponse;
 import com.manager.files.dto.ProcessFileRequest;
 import com.manager.files.dto.ProcessRestartRequest;
+import com.manager.files.model.FileDocument;
 import com.manager.files.service.FileAnalysisService;
 import com.manager.files.service.FileService;
+import com.manager.files.service.KafkaService;
 
 @RestController
 @RequestMapping("/file")
@@ -29,12 +31,16 @@ public class FileController {
 
     private final FileAnalysisService fileAnalysisService;
 
+    private final KafkaService kafkaService;
+
     public FileController(
         FileService fileService,
-        FileAnalysisService fileAnalysisService
+        FileAnalysisService fileAnalysisService,
+        KafkaService kafkaService
     ) {
         this.fileService = fileService;
         this.fileAnalysisService = fileAnalysisService;
+        this.kafkaService = kafkaService;
     }
     
     @PostMapping
@@ -70,7 +76,7 @@ public class FileController {
     public FilesResponse processFile(
         @RequestBody ProcessFileRequest request
     ) throws Exception {
-        fileAnalysisService.processFile(request.getFileId());
+        kafkaService.send(request.getFileId());
         return fileService.getFile(request.getFileId());
     }
 

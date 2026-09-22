@@ -12,6 +12,7 @@ import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException
 import org.springframework.batch.core.launch.JobRestartException;
 import org.springframework.batch.core.launch.support.TaskExecutorJobOperator;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import com.manager.files.dto.GeneralResponse;
@@ -42,6 +43,9 @@ public class FileAnalysisService {
         this.jobRepository = jobRepository;
     }
 
+    @KafkaListener(
+        topics = "file-process"
+    )
     public ProcessFileResponse processFile(
         String fileId
     ) throws 
@@ -50,41 +54,43 @@ public class FileAnalysisService {
         JobRestartException,
         InvalidJobParametersException
     {
-        FileDocument file = fileRepository
-            .findById(fileId)
-            .orElseThrow(() -> new RuntimeException("File not found"));
+        System.out.println(fileId);
+        System.out.println("kafka listened");
+        // FileDocument file = fileRepository
+        //     .findById(fileId)
+        //     .orElseThrow(() -> new RuntimeException("File not found"));
 
-        if (file != null) {
-            String path = file.getFilePath();
+        // if (file != null) {
+        //     String path = file.getFilePath();
 
-            JobParameters jobParameter = 
-                new JobParametersBuilder()
-                    .addString(
-                        "filePath",
-                        path
-                    )
-                    .addString(
-                        "fileId",
-                        file.getId().toString()
-                    )
-                    .toJobParameters();
+        //     JobParameters jobParameter = 
+        //         new JobParametersBuilder()
+        //             .addString(
+        //                 "filePath",
+        //                 path
+        //             )
+        //             .addString(
+        //                 "fileId",
+        //                 file.getId().toString()
+        //             )
+        //             .toJobParameters();
             
-            JobExecution newJob = asyncJobOperator.start(
-                fileAnalysisJob, 
-                jobParameter
-            );
+        //     JobExecution newJob = asyncJobOperator.start(
+        //         fileAnalysisJob, 
+        //         jobParameter
+        //     );
 
-            Map<String, Object> metaData = file.getMetadata();
+        //     Map<String, Object> metaData = file.getMetadata();
 
-            metaData.put("jobId", newJob.getId());
+        //     metaData.put("jobId", newJob.getId());
             
-            file.setMetadata(metaData);
+        //     file.setMetadata(metaData);
             
-            fileRepository.save(file);
+        //     fileRepository.save(file);
             
-            return new ProcessFileResponse(newJob.getId());
+        //     return new ProcessFileResponse(newJob.getId());
                         
-        }
+        // }
         return null;
     }
 
