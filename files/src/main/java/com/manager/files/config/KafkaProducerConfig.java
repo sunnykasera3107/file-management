@@ -33,7 +33,7 @@ public class KafkaProducerConfig {
 
         config.put(
             ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-            JsonSerializer.class
+            StringSerializer.class
         );
 
         return new DefaultKafkaProducerFactory<>(config);
