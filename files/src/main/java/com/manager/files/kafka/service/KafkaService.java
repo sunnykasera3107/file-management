@@ -15,7 +15,6 @@ public class KafkaService {
     }
 
     public void send(String fileId) {
-        System.out.println(fileId);
         kafkaTemplate.send(
             KafkaTopics.FILE_PROCESSING, 
             fileId

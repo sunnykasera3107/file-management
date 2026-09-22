@@ -45,7 +45,8 @@ public class FileAnalysisService {
     }
 
     @KafkaListener(
-        topics = KafkaTopics.FILE_PROCESSING
+        topics = "file-process",
+        groupId = "file-processing-group"
     )
     public void processFile(
         String fileId
@@ -55,8 +56,8 @@ public class FileAnalysisService {
         JobRestartException,
         InvalidJobParametersException
     {
-        System.out.println(fileId);
         System.out.println("kafka listened");
+        System.out.println(fileId);
         // FileDocument file = fileRepository
         //     .findById(fileId)
         //     .orElseThrow(() -> new RuntimeException("File not found"));
