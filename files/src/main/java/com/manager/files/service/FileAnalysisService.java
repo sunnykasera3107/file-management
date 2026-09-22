@@ -47,7 +47,7 @@ public class FileAnalysisService {
     @KafkaListener(
         topics = KafkaTopics.FILE_PROCESSING
     )
-    public ProcessFileResponse processFile(
+    public void processFile(
         String fileId
     ) throws 
         JobExecutionAlreadyRunningException,
@@ -92,7 +92,6 @@ public class FileAnalysisService {
         //     return new ProcessFileResponse(newJob.getId());
                         
         // }
-        return null;
     }
 
     public GeneralResponse getJobStatus(long id) {

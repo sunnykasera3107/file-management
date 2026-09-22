@@ -76,8 +76,6 @@ public class FileController {
     public FilesResponse processFile(
         @RequestBody ProcessFileRequest request
     ) throws Exception {
-        System.out.println(request.getFileId());
-        System.out.println("location controller");
         kafkaService.send(request.getFileId());
         return fileService.getFile(request.getFileId());
     }
