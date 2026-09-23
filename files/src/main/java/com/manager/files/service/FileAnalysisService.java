@@ -45,8 +45,7 @@ public class FileAnalysisService {
     }
 
     @KafkaListener(
-        topics = "file-process",
-        groupId = "file-processing-group"
+        topics = "file-process"
     )
     public void processFile(
         String fileId

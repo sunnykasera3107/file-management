@@ -16,7 +16,7 @@ public class KafkaService {
 
     public void send(String fileId) {
         kafkaTemplate.send(
-            KafkaTopics.FILE_PROCESSING, 
+            "file-process",
             fileId
         ).whenComplete((result, exception) -> {
 
