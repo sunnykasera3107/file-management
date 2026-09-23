@@ -3,8 +3,6 @@ package com.manager.files.kafka.service;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import com.manager.files.kafka.topics.KafkaTopics;
-
 @Service 
 public class KafkaService {
     

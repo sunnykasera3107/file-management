@@ -45,9 +45,18 @@ public class FileAnalysisService {
     }
 
     @KafkaListener(
-        topics = "file-process"
+        topics = "file-process",
+        groupId = "file-processing-group"
     )
-    public void processFile(
+     public void processFile(String fileId) {
+
+        System.out.println("=================================");
+        System.out.println("KAFKA MESSAGE RECEIVED");
+        System.out.println("File ID: " + fileId);
+        System.out.println("=================================");
+    }
+
+    public void processFile1(
         String fileId
     ) throws 
         JobExecutionAlreadyRunningException,
