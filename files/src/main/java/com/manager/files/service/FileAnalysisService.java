@@ -24,25 +24,25 @@ import com.manager.files.repository.FileRepository;
 @Service
 public class FileAnalysisService {
 
-    private final FileRepository fileRepository;
+    // private final FileRepository fileRepository;
     
-    private final TaskExecutorJobOperator asyncJobOperator;
+    // private final TaskExecutorJobOperator asyncJobOperator;
 
-    private final Job fileAnalysisJob;
+    // private final Job fileAnalysisJob;
 
-    private final JobRepository jobRepository;
+    // private final JobRepository jobRepository;
 
-    public FileAnalysisService(
-        FileRepository fileRepository,
-        TaskExecutorJobOperator jobOperator, 
-        Job fileAnalysisJob,
-        JobRepository jobRepository
-    ) {
-        this.asyncJobOperator = jobOperator;
-        this.fileAnalysisJob = fileAnalysisJob;
-        this.fileRepository = fileRepository;
-        this.jobRepository = jobRepository;
-    }
+    // public FileAnalysisService(
+    //     FileRepository fileRepository,
+    //     TaskExecutorJobOperator jobOperator, 
+    //     Job fileAnalysisJob,
+    //     JobRepository jobRepository
+    // ) {
+    //     this.asyncJobOperator = jobOperator;
+    //     this.fileAnalysisJob = fileAnalysisJob;
+    //     this.fileRepository = fileRepository;
+    //     this.jobRepository = jobRepository;
+    // }
 
     @KafkaListener(
         topics = "file-process",
@@ -56,68 +56,68 @@ public class FileAnalysisService {
         System.out.println("=================================");
     }
 
-    public void processFile1(
-        String fileId
-    ) throws 
-        JobExecutionAlreadyRunningException,
-        JobInstanceAlreadyCompleteException,
-        JobRestartException,
-        InvalidJobParametersException
-    {
-        System.out.println("kafka listened");
-        System.out.println(fileId);
-        // FileDocument file = fileRepository
-        //     .findById(fileId)
-        //     .orElseThrow(() -> new RuntimeException("File not found"));
+    // public void processFile1(
+    //     String fileId
+    // ) throws 
+    //     JobExecutionAlreadyRunningException,
+    //     JobInstanceAlreadyCompleteException,
+    //     JobRestartException,
+    //     InvalidJobParametersException
+    // {
+    //     System.out.println("kafka listened");
+    //     System.out.println(fileId);
+    //     // FileDocument file = fileRepository
+    //     //     .findById(fileId)
+    //     //     .orElseThrow(() -> new RuntimeException("File not found"));
 
-        // if (file != null) {
-        //     String path = file.getFilePath();
+    //     // if (file != null) {
+    //     //     String path = file.getFilePath();
 
-        //     JobParameters jobParameter = 
-        //         new JobParametersBuilder()
-        //             .addString(
-        //                 "filePath",
-        //                 path
-        //             )
-        //             .addString(
-        //                 "fileId",
-        //                 file.getId().toString()
-        //             )
-        //             .toJobParameters();
+    //     //     JobParameters jobParameter = 
+    //     //         new JobParametersBuilder()
+    //     //             .addString(
+    //     //                 "filePath",
+    //     //                 path
+    //     //             )
+    //     //             .addString(
+    //     //                 "fileId",
+    //     //                 file.getId().toString()
+    //     //             )
+    //     //             .toJobParameters();
             
-        //     JobExecution newJob = asyncJobOperator.start(
-        //         fileAnalysisJob, 
-        //         jobParameter
-        //     );
+    //     //     JobExecution newJob = asyncJobOperator.start(
+    //     //         fileAnalysisJob, 
+    //     //         jobParameter
+    //     //     );
 
-        //     Map<String, Object> metaData = file.getMetadata();
+    //     //     Map<String, Object> metaData = file.getMetadata();
 
-        //     metaData.put("jobId", newJob.getId());
+    //     //     metaData.put("jobId", newJob.getId());
             
-        //     file.setMetadata(metaData);
+    //     //     file.setMetadata(metaData);
             
-        //     fileRepository.save(file);
+    //     //     fileRepository.save(file);
             
-        //     return new ProcessFileResponse(newJob.getId());
+    //     //     return new ProcessFileResponse(newJob.getId());
                         
-        // }
-    }
+    //     // }
+    // }
 
-    public GeneralResponse getJobStatus(long id) {
-        JobExecution jobExecution = jobRepository.getJobExecution(id);
-        String status = jobExecution.getStatus().toString();
-        return new GeneralResponse(status);
-    }
+    // public GeneralResponse getJobStatus(long id) {
+    //     JobExecution jobExecution = jobRepository.getJobExecution(id);
+    //     String status = jobExecution.getStatus().toString();
+    //     return new GeneralResponse(status);
+    // }
 
-    public GeneralResponse restartJob(long id) 
-        throws JobRestartException
-    {
-        System.out.println("Job Id");
-        System.out.println(id);
-        JobExecution jobExecution = jobRepository.getJobExecution(id);
-        System.out.println(jobExecution);
-        asyncJobOperator.restart(jobExecution);
-        System.out.println("test");
-        return new GeneralResponse("Job restarted");
-    } 
+    // public GeneralResponse restartJob(long id) 
+    //     throws JobRestartException
+    // {
+    //     System.out.println("Job Id");
+    //     System.out.println(id);
+    //     JobExecution jobExecution = jobRepository.getJobExecution(id);
+    //     System.out.println(jobExecution);
+    //     asyncJobOperator.restart(jobExecution);
+    //     System.out.println("test");
+    //     return new GeneralResponse("Job restarted");
+    // } 
 }
