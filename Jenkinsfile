@@ -12,20 +12,18 @@ pipeline {
         stage('Remove Old Infrastructure') {
             steps {
                 bat 'docker compose down -v'
-                
-                bat '''
-                    docker network inspect file-management-network >nul 2>&1
-                    if %ERRORLEVEL% EQU 0 (
-                        docker network rm file-management-network
-                    )
-                    exit /b 0
-                '''
             }
         }
 
         stage('Setup Infrastructure') {
             steps {
-                bat 'docker network create file-management-network'
+                bat '''
+                    docker network inspect file-management-network >nul 2>&1
+                    if %ERRORLEVEL% NOTEQU 0 (
+                        docker network create file-management-network
+                    )
+                    exit /b 0
+                '''
                 
                 dir("database") {
                     bat 'docker compose up --no-recreate -d'
