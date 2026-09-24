@@ -18,11 +18,7 @@ pipeline {
         stage('Setup Infrastructure') {
             steps {
                 bat '''
-                    docker network inspect file-management-network >nul 2>&1
-                    if %ERRORLEVEL% NOTEQU 0 (
-                        docker network create file-management-network
-                    )
-                    exit /b 0
+                    docker network inspect file-management-network >nul 2>&1 || docker network create file-management-network
                 '''
                 
                 dir("database") {
