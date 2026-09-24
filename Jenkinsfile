@@ -13,10 +13,6 @@ pipeline {
             steps {
                 bat 'docker compose down -v'
                 
-                dir("database") {
-                    bat 'docker compose down -v'
-                }
-
                 bat '''
                     docker network inspect file-management-network >nul 2>&1
                     if %ERRORLEVEL% EQU 0 (
@@ -32,7 +28,7 @@ pipeline {
                 bat 'docker network create file-management-network'
                 
                 dir("database") {
-                    bat 'docker compose up --build -d'
+                    bat 'docker compose up --no-recreate -d'
                 }
 
                 sleep(15)
@@ -145,9 +141,6 @@ pipeline {
                 failure {
                     echo 'CI pipeline failed'
                     bat 'docker compose down -v'
-                    dir("database") {
-                        bat 'docker compose down -v'
-                    }
                 }
 
                 always {
