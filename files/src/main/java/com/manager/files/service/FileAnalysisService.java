@@ -42,7 +42,7 @@ public class FileAnalysisService {
         this.jobRepository = jobRepository;
     }
 
-    public ProcessFileResponse processFile(
+    public void processFile(
         String fileId
     ) throws 
         JobExecutionAlreadyRunningException,
@@ -82,9 +82,7 @@ public class FileAnalysisService {
             
             fileRepository.save(file);
             
-            return new ProcessFileResponse(newJob.getId());
         }
-        return null;
     }
 
     public GeneralResponse getJobStatus(long id) {
