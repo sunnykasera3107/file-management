@@ -47,12 +47,7 @@ public class KafkaConsumerConfig {
         JacksonJsonDeserializer<LogProducer> deserializer =
                 new JacksonJsonDeserializer<>(LogProducer.class);
 
-        deserializer.addTrustedPackages(
-            "com.gateway.api.kafka.dto",
-            "com.manager.log.kafka.dto",
-            "com.manager.users.kafka.dto",
-            "com.manager.files.kafka.dto"
-        );
+        deserializer.setUseTypeHeaders(false);
 
         return new DefaultKafkaConsumerFactory<>(
             config,

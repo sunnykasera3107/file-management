@@ -2,8 +2,6 @@ package com.manager.log.kafka.service;
 
 import jakarta.annotation.PostConstruct;
 
-import java.time.LocalDateTime;
-
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
