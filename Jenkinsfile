@@ -59,6 +59,10 @@ pipeline {
                 dir('api') {
                     bat 'mvn clean compile -DskipTests'
                 }
+
+                dir('log') {
+                    bat 'mvn clean compile -DskipTests'
+                }
             }
         }
 
@@ -85,6 +89,10 @@ pipeline {
                         dir('api') {
                             bat 'mvn verify -DskipTests'
                         }
+
+                        dir('log') {
+                            bat 'mvn verify -DskipTests'
+                        }
                     }
                 }
 
@@ -99,6 +107,10 @@ pipeline {
                         }
 
                         dir('api') {
+                            bat 'mvn dependency:tree'
+                        }
+
+                        dir('log') {
                             bat 'mvn dependency:tree'
                         }
                     }
@@ -117,6 +129,10 @@ pipeline {
                 }
 
                 dir('api') {
+                    bat 'mvn package -DskipTests'
+                }
+
+                dir('log') {
                     bat 'mvn package -DskipTests'
                 }
             }
