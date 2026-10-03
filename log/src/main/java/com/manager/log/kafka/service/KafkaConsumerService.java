@@ -16,6 +16,7 @@ public class KafkaConsumerService {
     public KafkaConsumerService(
         LogRepository logRepository
     ) {
+        System.out.println("🔥🔥🔥 CONSTRUCTOR CALLED 🔥🔥🔥");
         this.logRepository = logRepository;
     }
     

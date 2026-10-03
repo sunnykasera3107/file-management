@@ -28,7 +28,7 @@ public class KafkaProducerConfig {
 
         config.put(
             ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-            kafkaServer
+            "kafka:9092"
         );
 
         config.put(
