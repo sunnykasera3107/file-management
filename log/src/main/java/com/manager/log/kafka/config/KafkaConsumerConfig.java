@@ -29,13 +29,26 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, LogProducer> consumerFactory() {
         Map<String, Object> config = new HashMap<>();
 
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
-        config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, "log-processing-group");
-        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);
+        config.put(
+            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+            kafkaServer
+        );
 
-        return new DefaultKafkaConsumerFactory<>(config);
+        config.put(
+            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
+            "earliest"
+        );
+
+        config.put(
+            ConsumerConfig.GROUP_ID_CONFIG,
+            "log-processing-group"
+        );
+
+        return new DefaultKafkaConsumerFactory<>(
+            config,
+            new StringDeserializer(),
+            new JacksonJsonDeserializer<>(LogProducer.class)
+        );
     }
 
     @Bean(name = "kafkaListenerContainerFactory")
