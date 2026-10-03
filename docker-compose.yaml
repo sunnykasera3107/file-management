@@ -59,7 +59,7 @@ services:
     ports:
       - 8084:8080
     volumes:
-      - api:/home/app
+      - log:/home/app
 
   frontend:
     build: 
@@ -89,4 +89,5 @@ volumes:
   files:
   storage:
   api:
+  log:
   frontend:
