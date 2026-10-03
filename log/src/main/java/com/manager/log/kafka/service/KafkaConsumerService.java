@@ -38,7 +38,7 @@ public class KafkaConsumerService {
         InvalidJobParametersException
     {
 
-        System.out.println("=================================");
+        System.out.println("==================================");
         System.out.println("🔥 KAFKA MESSAGE RECEIVED");
         System.out.println("File ID: " + log.getMessage());
         System.out.println("=================================");
