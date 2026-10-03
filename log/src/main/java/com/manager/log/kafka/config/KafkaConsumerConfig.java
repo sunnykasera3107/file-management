@@ -1,25 +1,31 @@
-package com.manager.log.config;
+package com.manager.log.kafka.config;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import com.manager.log.kafka.dto.LogProducer;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@Configuration
+@Configuration 
 public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String kafkaServer;
 
-    @Bean
+    public  KafkaConsumerConfig() {
+        System.out.println(kafkaServer);
+    }
+
+    @Bean 
     public ConsumerFactory<String, LogProducer> consumerFactory() {
         Map<String, Object> config = new HashMap<>();
 

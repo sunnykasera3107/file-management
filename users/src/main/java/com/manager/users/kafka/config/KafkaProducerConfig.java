@@ -25,6 +25,8 @@ public class KafkaProducerConfig {
     @Bean 
     public ProducerFactory<String, LogProducer> producerFactory() {
 
+        System.out.println(kafkaServer);
+
         Map<String, Object> config = new HashMap<>();
 
         config.put(
