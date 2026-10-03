@@ -52,7 +52,7 @@ public class KafkaConsumerService {
     }
 
     @KafkaListener(
-        topics = "api-exception",
+        topics = "api-exception-v2",
         groupId = "log-processing-group"
     )
     public void logAPIService(LogDocument log) {
