@@ -56,6 +56,10 @@ services:
     container_name: logmanagement
     networks:
       - file-management-network
+    environment:
+      MONGO_HOST: mongo
+      MONGO_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     ports:
       - 8084:8080
     volumes:
