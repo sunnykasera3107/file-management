@@ -24,7 +24,10 @@ public class KafkaConsumerService {
         System.out.println("🔥🔥🔥 CONSUMER BEAN CREATED 🔥🔥🔥");
     }
 
-    @KafkaListener(topics = "file-exception")
+    @KafkaListener(
+        topics = "file-exception",
+        groupId = "log-processing-group"
+    )
     public void logFileService(LogDocument log) {
 
         System.out.println("==================================");
@@ -34,7 +37,10 @@ public class KafkaConsumerService {
         logRepository.save(log);
     }
 
-    @KafkaListener(topics = "user-exception")
+    @KafkaListener(
+        topics = "user-exception",
+        groupId = "log-processing-group"
+    )
     public void logUserService(LogDocument log) {
 
         System.out.println("=================================");
@@ -45,7 +51,10 @@ public class KafkaConsumerService {
 
     }
 
-    @KafkaListener(topics = "api-exception")
+    @KafkaListener(
+        topics = "api-exception",
+        groupId = "log-processing-group"
+    )
     public void logAPIService(LogDocument log) {
 
         System.out.println("=================================");
