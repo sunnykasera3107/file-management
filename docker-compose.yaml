@@ -57,7 +57,7 @@ services:
     networks:
       - file-management-network
     ports:
-      - 8083:8080
+      - 8084:8080
     volumes:
       - api:/home/app
 
