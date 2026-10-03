@@ -20,7 +20,7 @@ pipeline {
                 bat '''
                     docker network inspect file-management-network >nul 2>&1 || docker network create file-management-network
                 '''
-                
+
                 dir("database") {
                     bat 'docker compose up --no-recreate -d'
                 }

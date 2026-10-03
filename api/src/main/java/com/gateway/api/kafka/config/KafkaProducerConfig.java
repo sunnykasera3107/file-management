@@ -1,4 +1,4 @@
-package com.manager.files.config;
+package com.gateway.api.kafka.config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,11 +11,15 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
+import com.gateway.api.kafka.dto.LogProducer;
+
+import tools.jackson.databind.annotation.JsonSerialize;
+
 @Configuration 
 public class KafkaProducerConfig {
 
     @Bean 
-    public ProducerFactory<String, String> producerFactory() {
+    public ProducerFactory<String, LogProducer> producerFactory() {
 
         Map<String, Object> config = new HashMap<>();
 
@@ -31,16 +35,15 @@ public class KafkaProducerConfig {
 
         config.put(
             ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-            StringSerializer.class
+            JsonSerialize.class
         );
 
         return new DefaultKafkaProducerFactory<>(config);
     }
 
     @Bean
-    public KafkaTemplate<String, String> kafkaTemplate(
-            ProducerFactory<String, String> producerFactory) {
-
+    public KafkaTemplate<String, LogProducer> kafkaTemplate(
+            ProducerFactory<String, LogProducer> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 

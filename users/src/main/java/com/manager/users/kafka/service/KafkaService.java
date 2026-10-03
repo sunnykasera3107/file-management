@@ -1,11 +1,11 @@
-package com.manager.files.kafka.service;
+package com.manager.users.kafka.service;
 
 import java.time.LocalDateTime;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import com.manager.files.kafka.dto.LogProducer;
+import com.manager.users.kafka.dto.LogProducer;
 
 @Service 
 public class KafkaService {
@@ -18,11 +18,11 @@ public class KafkaService {
 
     public void send(LogProducer log) {
         log.setTimestamp(LocalDateTime.now());
-        log.setServiceName("FileService");
+        log.setServiceName("UserService");
         log.setEnvironment("Test");
         
         kafkaTemplate.send(
-            "file-exception",
+            "user-exception",
             log
         ).whenComplete((result, exception) -> {
 
