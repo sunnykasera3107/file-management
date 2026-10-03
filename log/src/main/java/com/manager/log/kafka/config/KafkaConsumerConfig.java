@@ -44,10 +44,20 @@ public class KafkaConsumerConfig {
             "log-processing-group"
         );
 
+        JacksonJsonDeserializer<LogProducer> deserializer =
+                new JacksonJsonDeserializer<>(LogProducer.class);
+
+        deserializer.addTrustedPackages(
+            "com.gateway.api.kafka.dto",
+            "com.manager.log.kafka.dto",
+            "com.manager.users.kafka.dto",
+            "com.manager.files.kafka.dto"
+        );
+
         return new DefaultKafkaConsumerFactory<>(
             config,
             new StringDeserializer(),
-            new JacksonJsonDeserializer<>(LogProducer.class)
+            deserializer
         );
     }
 
