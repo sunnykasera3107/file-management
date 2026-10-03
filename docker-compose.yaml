@@ -51,6 +51,16 @@ services:
     volumes:
       - api:/home/app
 
+  log:
+    build: ./log
+    container_name: logmanagement
+    networks:
+      - file-management-network
+    ports:
+      - 8083:8080
+    volumes:
+      - api:/home/app
+
   frontend:
     build: 
       context: ./frontend
