@@ -2,9 +2,12 @@ package com.manager.log.kafka.service;
 
 import jakarta.annotation.PostConstruct;
 
+import java.time.LocalDateTime;
+
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import com.manager.log.kafka.dto.LogProducer;
 import com.manager.log.model.LogDocument;
 import com.manager.log.repository.LogRepository;
 
@@ -29,40 +32,52 @@ public class KafkaConsumerService {
         topics = "file-exception",
         groupId = "log-processing-group"
     )
-    public void logFileService(LogDocument log) {
-
+    public void logFileService(LogProducer log) {
         System.out.println("==================================");
         System.out.println("🔥 KAFKA MESSAGE RECEIVED");
         System.out.println("File ID: " + log.getMessage());
         System.out.println("=================================");
-        logRepository.save(log);
+        saveLog(log);
     }
 
     @KafkaListener(
         topics = "user-exception",
         groupId = "log-processing-group"
     )
-    public void logUserService(LogDocument log) {
-
+    public void logUserService(LogProducer log) {
         System.out.println("=================================");
         System.out.println("🔥 KAFKA MESSAGE RECEIVED");
         System.out.println("File ID: " + log.getMessage());
         System.out.println("=================================");
-        logRepository.save(log);
-
+        saveLog(log);
     }
 
     @KafkaListener(
         topics = "api-exception",
         groupId = "log-processing-group"
     )
-    public void logAPIService(LogDocument log) {
-
+    public void logAPIService(LogProducer log) {
         System.out.println("=================================");
         System.out.println("🔥 KAFKA MESSAGE RECEIVED");
         System.out.println("File ID: " + log.getMessage());
         System.out.println("==================================");
-        logRepository.save(log);
+        saveLog(log);
+    }
 
+    private void saveLog(LogProducer log) {
+        LogDocument logDoc = new LogDocument();
+        logDoc.setTimestamp(log.getTimestamp());
+        logDoc.setServiceName(log.getServiceName());
+        logDoc.setEnvironment(log.getEnvironment());
+        logDoc.setLevel(log.getLevel());
+        logDoc.setEventType(log.getEventType());
+        logDoc.setMessage(log.getMessage());
+        logDoc.setTraceMessage(log.getTraceMessage());
+        logDoc.setExceptionType(log.getExceptionType());
+        logDoc.setExceptionMessage(log.getExceptionMessage());
+        logDoc.setHttpStatus(log.getHttpStatus());
+        logDoc.setObjectId(log.getObjectId());
+        logDoc.setMetadata(log.getMetadata());
+        logRepository.save(logDoc);
     }
 }
